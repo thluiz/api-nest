@@ -10,14 +10,17 @@ import * as helmet from 'helmet';
 import * as rateLimit from 'express-rate-limit';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import bodyParser = require("body-parser");
+import cors = require("cors");
+
 import { AzureSessionStorageService } from './azure-session-storage/azure-session-storage.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(helmet());
-  app.enableCors();
 
+  /* SESSION */
   app.use(
     session({
       secret: process.env.EXPRESS_SESSION_KEY,
@@ -36,6 +39,24 @@ async function bootstrap() {
     })
   );
 
+
+  /* CORS */
+  app.enableCors(); 
+
+  const corsOptions: cors.CorsOptions = {
+    origin: (origin, callback) => {
+      if (!origin || (process.env.CORS_ALLOWED_ORIGINS.split(",") as any).includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true
+  };
+
+  app.use(cors(corsOptions));
+
+  /* RATELIMIT */
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000, // 15 minutes
@@ -43,6 +64,12 @@ async function bootstrap() {
     }),
   );
 
+  /* BODYPARSER */
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json());
+
+  /* PASSPORT */
+  app.use(passport.initialize());
   app.use(passport.session());
 
   await app.listen(3000);
