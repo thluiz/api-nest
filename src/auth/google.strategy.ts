@@ -33,7 +33,7 @@ export default class GoogleStrategy extends PassportStrategy(OAuth2Strategy, Aut
 				profile: Profile,
 				done: VerifyFunction
 			): Promise<void> => {
-				console.log("MY NAME IS TRISTAN PARTIN");
+				console.log("LOGIN:: ");
 				console.log(accessToken);
 				console.log(refreshToken);
 				console.log(profile);
