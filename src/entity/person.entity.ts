@@ -58,4 +58,9 @@ export class Person {
   @Column()
   @Generated('uuid')
   uuid: string;
+
+  @Column({
+    default: false,
+  })
+  is_admin: boolean;
 }

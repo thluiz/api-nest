@@ -15,7 +15,7 @@ const config: TypeOrmModuleOptions = {
     migrationsDir: 'src/migrations',
   },
   synchronize: false,
-  logging: false
+  logging: true
 };
 
 export = config;

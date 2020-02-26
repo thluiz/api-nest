@@ -10,6 +10,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @InjectRepository(Person)
+    private readonly peopleRepository: Repository<Person>,
     private readonly connection: Connection
   ) {}
 
@@ -58,6 +60,21 @@ export class UsersService {
       throw err;
     } finally {      
       await queryRunner.release();
+    }    
+  }
+  
+  async makeAdmin(user: User) : Promise<User> {
+    if(user.person.is_admin) {
+      console.log("User already is admin!");
+      return user;
     }
-	}
+
+    user.person.is_admin = true;
+
+    await this.peopleRepository.save(user.person);
+
+    return user;
+  }
+
+  
 }
