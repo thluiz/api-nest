@@ -4,10 +4,21 @@ import { AppService } from './app.service';
 import { HelpersModule } from './helpers/helpers.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PresenceModule } from './presence/presence.module';
+import { UsersModule } from './users/users.module';
+import * as OrmConfig from "./config/orm";
 
 @Module({
-  imports: [HelpersModule, AuthModule, ConfigModule],
+  imports: [
+    ConfigModule,
+    TypeOrmModule.forRoot(OrmConfig),
+    HelpersModule,
+    AuthModule,
+    PresenceModule,
+    UsersModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}  
+export class AppModule {}

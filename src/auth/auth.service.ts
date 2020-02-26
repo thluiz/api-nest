@@ -1,27 +1,31 @@
-import { Injectable } from "@nestjs/common";
-//import { UserRepository, User } from "../user";
-//import { InjectRepository } from "@nestjs/typeorm";
+import { Injectable, Inject } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { Profile } from 'passport-google-oauth';
+import ConfigService from '../config/config.service';
 
 export enum AuthProvider {
-	GOOGLE = "google"
+  GOOGLE = 'google',
 }
 
 @Injectable()
 export default class AuthService {
-	//private readonly userRepository: UserRepository;
+  
+  public constructor( 
+    @Inject(UsersService) private usersService: UsersService, 
+    @Inject(ConfigService) private configService: ConfigService) {
+	  
+  }
 
-	/*public constructor(@InjectRepository(User) userRepository: UserRepository) {
-		this.userRepository = userRepository;
-	}
-    */
 
-	public async validateUser(token: string): Promise<{} /*User*/ | undefined> {
-		//const user = await this.userRepository.findOneByToken(token);
-		//if (user === undefined) {
-		//	console.log("create account????");
-		//}
+  async validateUser(payload: { id: string }): Promise<any> {
+    return await this.usersService.findByUuId(payload.id);
+  }
 
-        //return user;
-        return {};
+  async findOrCreateUserFromGoogle(profile: Profile) {
+		let user = await this.usersService.findByEmail(profile.emails[0].value);
+		if (user === undefined) {
+			user = await this.usersService.createMinimalUser(profile.displayName, profile.emails[0].value, profile.photos[0].value);
+		}
+		return user;
 	}
 }

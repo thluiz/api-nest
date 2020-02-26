@@ -70,8 +70,7 @@ async function bootstrap() {
 
   /* PASSPORT */
   app.use(passport.initialize());
-  app.use(passport.session());
 
-  await app.listen(process.env.port || process.env.PORT || 6000);
+  await app.listen(process.env.port || process.env.PORT || 3200);
 }
 bootstrap();

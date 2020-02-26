@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, UnauthorizedException, Inject } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 
 import {
@@ -9,13 +9,14 @@ import {
 } from "passport-google-oauth";
 import { Request } from "express";
 import AuthService, { AuthProvider } from "./auth.service";
-import ConfigService from "src/config/config.service";
-
+import ConfigService from "../config/config.service";
 
 
 @Injectable()
 export default class GoogleStrategy extends PassportStrategy(OAuth2Strategy, AuthProvider.GOOGLE) {
-	public constructor(authService: AuthService, configService: ConfigService) {
+	public constructor(		
+		@Inject(AuthService) authService: AuthService, 
+		configService: ConfigService) {
 		const options: IOAuth2StrategyOptionWithRequest & { scope: string | string[] } = {
 			clientID: configService.GoogleOauth.ClientId,
 			clientSecret: configService.GoogleOauth.ClientSecret,
@@ -32,19 +33,13 @@ export default class GoogleStrategy extends PassportStrategy(OAuth2Strategy, Aut
 				refreshToken: string,
 				profile: Profile,
 				done: VerifyFunction
-			): Promise<void> => {
-				console.log("LOGIN:: ");
-				console.log(accessToken);
-				console.log(refreshToken);
-				console.log(profile);
-
-				const user = await authService.validateUser(accessToken);
-				if (user === undefined) {
-					done(new UnauthorizedException());
-				}
-
+			): Promise<void> => {				
+				let user = await authService.findOrCreateUserFromGoogle(profile);
+				
 				done(undefined, user);
 			}
 		);
 	}
+
+	
 }

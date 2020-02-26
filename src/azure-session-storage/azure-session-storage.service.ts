@@ -1,6 +1,6 @@
 import Session = require("express-session");
 import { AzureTableManager } from './azure-tables-manager';
-import { replaceErrors } from 'src/helpers/replace-errors.helper';
+import { replaceErrors } from "../helpers/replace-errors.helper";
 
 const tableName = "AzureSessionStore";
 
